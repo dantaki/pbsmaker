@@ -9,15 +9,17 @@ usage:
 8888888P" 888  "Y88b    "Y88b.888 Y888P 888   d88P  8888888888b   888       8888888P"  
 888       888    888      "888888  Y8P  888  d88P   888888  Y88b  888       888 T88b   
 888       888   d88PY88b  d88P888   "   888 d8888888888888   Y88b 888       888  T88b  
-888       8888888P"  "Y8888P" 888       888d88P     888888    Y88b8888888888888   T88b
+888       8888888P"  "Y8888P" 888       888d88P     888888    Y88b8888888888888   T88b                                                              
                         construct PBS job submission scripts 
 --------------------------------------------------------------------------------------
 Version 0.0.1
 Author: Danny Antaki dantaki at ucsd dot edu
-  pbsmaker  -i <command> -a <account> -p <partition> 
-           -c <cpu>     -t <walltime> -n <jobname> 
-           -o <logdir>  -T <array arg> -B <n_parallel>
-	
+  pbsmaker  -i <command>  -q <queue>  -c <cores>
+            -t <walltime> -x <nodes>  -d <dependency>
+            -D <dependency directive> -n <jobname>
+            -o <logdir>   -T <array arg>  
+            -B <n_parallel>
+
 pbs arguments:
   
   -i        file containing commands
