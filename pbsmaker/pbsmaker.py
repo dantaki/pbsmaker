@@ -109,4 +109,4 @@ def main():
         with open(cmd,'r') as f: _cmd = [l.rstrip() for l in f]
         sys.stdout.write('{}\n'.format('\n'.join(_cmd)))
     else:
-        sys.stdout.write('SEED=$(cat {} | head -n $PBS_ARRAYID | tail -n 1 | awk "{print $1}")\n$SEED\n'.format(cmd))
+        sys.stdout.write('SEED=$(cat {} | head -n $PBS_ARRAYID | tail -n 1 | awk "{{print $1}}")\n$SEED\n'.format(cmd))
