@@ -22,9 +22,11 @@ __usage__="""
 --------------------------------------------------------------------------------------
 Version {}
 Author: Danny Antaki dantaki at ucsd dot edu
-  pbsmaker  -i <command> -a <account> -p <partition> 
-           -c <cpu>     -t <walltime> -n <jobname> 
-           -o <logdir>  -T <array arg> -B <n_parallel>
+  pbsmaker  -i <command>  -q <queue>  -c <cores>
+            -t <walltime> -x <nodes>  -d <dependency>
+            -D <dependency directive> -n <jobname>
+            -o <logdir>   -T <array arg>  
+            -B <n_parallel>
 	
 pbs arguments:
   
