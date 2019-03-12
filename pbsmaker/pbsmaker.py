@@ -26,7 +26,7 @@ Author: Danny Antaki dantaki at ucsd dot edu
             -t <walltime> -x <nodes>  -d <dependency>
             -D <dependency directive> -n <jobname>
             -o <logdir>   -T <array arg>  
-            -B <n_parallel>
+            -B <n_parallel> -E <conda environment>
 	
 pbs arguments:
   
@@ -48,6 +48,8 @@ job array arguments:
 
 optional arguments:
   -rc       bashrc file to source
+  -E        conda environment to load
+
   -h        show this message and exit
 	 
 """.format(__version__)
@@ -77,12 +79,13 @@ def main():
     array_args.add_argument('-T',type=str,default=None,required=False)
     array_args.add_argument('-B',type=int,default=None,required=False)
     opt_args.add_argument('-rc',type=str,required=False,default=None)
+    opt_args.add_argument('-E',type=str,required=False,default=None)
     opt_args.add_argument('-h', '-help', required=False, action="store_true", default=False)
     
     args = parser.parse_args()
     cmd, part, cpu, wall, nodes, depend, direct, jobid, odir = args.i, args.q, args.c, args.t, args.x, args.d, args.D, args.n, args.o
     arr, arrby = args.T, args.B
-    rc, _help = args.rc, args.h
+    rc, conda_env, _help = args.rc, args.E, args.h
     if (_help==True or len(sys.argv)==1):
         print(__usage__)
         sys.exit(0)
@@ -104,6 +107,7 @@ def main():
     if depends!=None: sys.stdout.write('{}\n'.format(depends))
     if arr!=None: sys.stdout.write('#PBS -t {}%{}\n'.format(arr,arrby))
     if rc != None: sys.stdout.write('source {}\n'.format(rc))
+    if conda_env != None: sys.stdout.write('conda activate {}\n'.format(conda_env))
     if arr==None:
         _cmd=[]
         with open(cmd,'r') as f: _cmd = [l.rstrip() for l in f]
