@@ -1,5 +1,15 @@
-Make PBS submission scripts with ease
+# Make PBS submission scripts with ease
+---------------------------------------
 
+## Install
+
+```
+pip install https://github.com/dantaki/pbsmaker/releases/download/0.0.2/pbsmaker-0.0.2.tar.gz
+```
+
+-------------------------------------
+
+```
 usage: 
 
 8888888b. 888888b.   .d8888b. 888b     d888       d8888888    d8P 88888888888888888b.  
@@ -18,8 +28,8 @@ Author: Danny Antaki dantaki at ucsd dot edu
             -t <walltime> -x <nodes>  -d <dependency>
             -D <dependency directive> -n <jobname>
             -o <logdir>   -T <array arg>  
-            -B <n_parallel>
-
+            -B <n_parallel> -E <conda environment>
+	
 pbs arguments:
   
   -i        file containing commands
@@ -40,4 +50,8 @@ job array arguments:
 
 optional arguments:
   -rc       bashrc file to source
+  -E        conda environment to load
+
   -h        show this message and exit
+	 
+```
