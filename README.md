@@ -1,7 +1,7 @@
-# Make PBS submission scripts with ease
+## Make PBS submission scripts with ease
 ---------------------------------------
 
-## Install
+### Install
 
 ```
 pip install https://github.com/dantaki/pbsmaker/releases/download/0.0.2/pbsmaker-0.0.2.tar.gz
