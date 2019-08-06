@@ -4,7 +4,7 @@
 ### Install
 
 ```
-pip install https://github.com/dantaki/pbsmaker/releases/download/0.0.2/pbsmaker-0.0.2.tar.gz
+pip install https://github.com/dantaki/pbsmaker/releases/download/0.0.3/pbsmaker-0.0.3.tar.gz
 ```
 
 -------------------------------------
@@ -22,35 +22,31 @@ usage:
 888       8888888P"  "Y8888P" 888       888d88P     888888    Y88b8888888888888   T88b                                                              
                         construct PBS job submission scripts 
 --------------------------------------------------------------------------------------
-Version 0.0.1
+Version 0.0.3
+About:  construct PBS submission scripts with ease
+Usage:  pbsmaker [-h] <-i command file> [options]
+
 Author: Danny Antaki dantaki at ucsd dot edu
-  pbsmaker  -i <command>  -q <queue>  -c <cores>
-            -t <walltime> -x <nodes>  -d <dependency>
-            -D <dependency directive> -n <jobname>
-            -o <logdir>   -T <array arg>  
-            -B <n_parallel> -E <conda environment>
 	
-pbs arguments:
-  
-  -i        file containing commands
-  -q        queue     [default: hotel]
-  -c        cores     [default: 1]
-  -t        walltime  [H:M:S default: 08:00:00]
-  -x        nodes     [default: 1]
-  -d        dependency jobid
-  -D        dependency directive [default: afterany]
+Required Arguments:
+  -i        FILE        file containing commands, one per line
 
-  -n        job name  [default: foo]
-  -o        stdout and stderr output directory [default: cwd]
-
-job array arguments:
-
-  -T        array argument [LINE_START-LINE_END]
-  -B        parallel jobs
-
-optional arguments:
-  -rc       bashrc file to source
-  -E        conda environment to load
+Options:
+  -q        STR         queue                              [default: hotel]
+  -c        INT         cores                              [default: 1]
+  -t        STR         walltime                           [H:M:S default: 08:00:00]
+  -n        STR         job name                           [default: foo]
+  -o        PATH        stdout and stderr log directory    [default: cwd]
+  -x        INT         nodes                              [default: 1]
+  -A        STR         account
+  -m        STR         email options
+  -M        STR         email address
+  -d        STR         dependency jobid
+  -D        STR         dependency directive               [default: afterany]
+  -T        STR         job array argument                 [LINE-START-LINE-END]
+  -B        INT         parallel jobs
+  -rc       FILE        bashrc file to source
+  -E        STR         conda environment to load
 
   -h        show this message and exit
 	 
