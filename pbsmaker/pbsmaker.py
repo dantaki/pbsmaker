@@ -7,7 +7,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 '''
 from argparse import RawTextHelpFormatter
 import argparse,os,sys
-__version__='0.0.1'
+__version__='0.0.3'
 __usage__="""
 
 8888888b. 888888b.   .d8888b. 888b     d888       d8888888    d8P 88888888888888888b.  
@@ -21,34 +21,30 @@ __usage__="""
                         construct PBS job submission scripts 
 --------------------------------------------------------------------------------------
 Version {}
+About:  construct PBS submission scripts with ease
+Usage:  pbsmaker [-h] <-i command file> [options]
+
 Author: Danny Antaki dantaki at ucsd dot edu
-  pbsmaker  -i <command>  -q <queue>  -c <cores>
-            -t <walltime> -x <nodes>  -d <dependency>
-            -D <dependency directive> -n <jobname>
-            -o <logdir>   -T <array arg>  
-            -B <n_parallel> -E <conda environment>
 	
-pbs arguments:
-  
-  -i        file containing commands
-  -q        queue     [default: hotel]
-  -c        cores     [default: 1]
-  -t        walltime  [H:M:S default: 08:00:00]
-  -x        nodes     [default: 1]
-  -d        dependency jobid
-  -D        dependency directive [default: afterany]
+Required Arguments:
+  -i        FILE        file containing commands, one per line
 
-  -n        job name  [default: foo]
-  -o        stdout and stderr output directory [default: cwd]
-
-job array arguments:
-
-  -T        array argument [LINE_START-LINE_END]
-  -B        parallel jobs
-
-optional arguments:
-  -rc       bashrc file to source
-  -E        conda environment to load
+Options:
+  -q        STR         queue                              [default: hotel]
+  -c        INT         cores                              [default: 1]
+  -t        STR         walltime                           [H:M:S default: 08:00:00]
+  -n        STR         job name                           [default: foo]
+  -o        PATH        stdout and stderr log directory    [default: cwd]
+  -x        INT         nodes                              [default: 1]
+  -A        STR         account
+  -m        STR         email options
+  -M        STR         email address
+  -d        STR         dependency jobid
+  -D        STR         dependency directive               [default: afterany]
+  -T        STR         job array argument                 [LINE-START-LINE-END]
+  -B        INT         parallel jobs
+  -rc       FILE        bashrc file to source
+  -E        STR         conda environment to load
 
   -h        show this message and exit
 	 
@@ -66,38 +62,47 @@ def header(part,nodes,cpu,wall,jobid,err,out):
     return a
 def main():
     parser = argparse.ArgumentParser(formatter_class=RawTextHelpFormatter, usage=__usage__, add_help=False)
-    pbs_args, array_args, opt_args = parser.add_argument_group('pbs arguments'), parser.add_argument_group('job array arguments'), parser.add_argument_group('optional arguments')
+    pbs_args = parser.add_argument_group('pbs arguments')
     pbs_args.add_argument('-i',type=str,default=None,required=True)
     pbs_args.add_argument('-q',type=str,default='hotel',required=False)
     pbs_args.add_argument('-c',type=int,default=1,required=False)
     pbs_args.add_argument('-t',type=str,default='08:00:00',required=False)
     pbs_args.add_argument('-x',type=int,default=1,required=False)
+    pbs_args.add_argument('-A',type=str,default=None,required=False)
+    pbs_args.add_argument('-m',type=str,default=None,required=False)
+    pbs_args.add_argument('-M',type=str,default=None,required=False)
     pbs_args.add_argument('-d',type=str,default=None,required=False)
     pbs_args.add_argument('-D',type=str,default='afterany',choices=['afterany','afterok','afternotok','after','before','beforeok','beorenotok','beforeany'],required=False)
     pbs_args.add_argument('-n',type=str,default='foo',required=False)
     pbs_args.add_argument('-o',type=str,default=os.getcwd(),required=False)
-    array_args.add_argument('-T',type=str,default=None,required=False)
-    array_args.add_argument('-B',type=int,default=None,required=False)
-    opt_args.add_argument('-rc',type=str,required=False,default=None)
-    opt_args.add_argument('-E',type=str,required=False,default=None)
-    opt_args.add_argument('-h', '-help', required=False, action="store_true", default=False)
+    pbs_args.add_argument('-T',type=str,default=None,required=False)
+    pbs_args.add_argument('-B',type=int,default=None,required=False)
+    pbs_args.add_argument('-rc',type=str,required=False,default=None)
+    pbs_args.add_argument('-E',type=str,required=False,default=None)
+    pbs_args.add_argument('-h', '-help', required=False, action="store_true", default=False)
     
     args = parser.parse_args()
     cmd, part, cpu, wall, nodes, depend, direct, jobid, odir = args.i, args.q, args.c, args.t, args.x, args.d, args.D, args.n, args.o
+    acc, mail, addr = args.A, args.m, args.M 
     arr, arrby = args.T, args.B
     rc, conda_env, _help = args.rc, args.E, args.h
     if (_help==True or len(sys.argv)==1):
         print(__usage__)
         sys.exit(0)
+    ############################################################################
     if not os.path.isfile(cmd):
-        sys.stderr.write('ERROR {} NOT A FILE\n'.format(cmd))
+        sys.stderr.write('FATAL ERROR: {} NOT A FILE\n'.format(cmd))
         sys.exit(1)
     if cpu < 0:
-        sys.stderr.write('ERROR {} CAN NOT BE LESS THAN 0\n'.format(cpu))
+        sys.stderr.write('FATAL ERROR: {} CAN NOT BE LESS THAN 0\n'.format(cpu))
         sys.exit(1)
     if rc != None and not os.path.isfile(rc):
-        sys.stderr.write('ERROR {} NOT A FILE\n'.format(rc))
+        sys.stderr.write('FATAL ERROR: {} NOT A FILE\n'.format(rc))
         sys.exit(1)
+    if mail!= None and addr == None or mail==None and addr!=None:
+        sys.stderr.write('FATAL ERROR: both -m and -M must defined\n')
+        sys.exit(1)
+    ############################################################################
     if not odir.endswith('/'): odir=odir+'/'
     depends = None
     if depend!=None: depends = "#PBS -W depend={}:{}".format(direct,depend)
@@ -106,6 +111,9 @@ def main():
     sys.stdout.write('{}\n'.format('\n'.join(head)))
     if depends!=None: sys.stdout.write('{}\n'.format(depends))
     if arr!=None: sys.stdout.write('#PBS -t {}%{}\n'.format(arr,arrby))
+    if acc!=None: sys.stdout.write('#PBS -A {}\n'.format(acc))
+    if mail!=None: sys.stdout.write('#PBS -m {}\n#PBS -M {}\n'.format(mail,addr))
+    ############################################################################
     if rc != None: sys.stdout.write('source {}\n'.format(rc))
     if conda_env != None: sys.stdout.write('conda activate {}\n'.format(conda_env))
     if arr==None:
