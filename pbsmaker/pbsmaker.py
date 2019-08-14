@@ -36,6 +36,7 @@ Options:
   -n        STR         job name                           [default: foo]
   -o        PATH        stdout and stderr log directory    [default: cwd]
   -x        INT         nodes                              [default: 1]
+  -r        STR         requested memory in bytes
   -A        STR         account
   -m        STR         email options
   -M        STR         email address
@@ -45,7 +46,7 @@ Options:
   -B        INT         parallel jobs
   -rc       FILE        bashrc file to source
   -E        STR         conda environment to load
-
+  -j                    join output and error log files
   -h        show this message and exit
 	 
 """.format(__version__)
@@ -68,6 +69,7 @@ def main():
     pbs_args.add_argument('-c',type=int,default=1,required=False)
     pbs_args.add_argument('-t',type=str,default='08:00:00',required=False)
     pbs_args.add_argument('-x',type=int,default=1,required=False)
+    pbs_args.add_argument('-r',type=str,default=None,required=False)
     pbs_args.add_argument('-A',type=str,default=None,required=False)
     pbs_args.add_argument('-m',type=str,default=None,required=False)
     pbs_args.add_argument('-M',type=str,default=None,required=False)
@@ -79,13 +81,14 @@ def main():
     pbs_args.add_argument('-B',type=int,default=None,required=False)
     pbs_args.add_argument('-rc',type=str,required=False,default=None)
     pbs_args.add_argument('-E',type=str,required=False,default=None)
+    pbs_args.add_argument('-j',default=False,action="store_true",required=False)
     pbs_args.add_argument('-h', '-help', required=False, action="store_true", default=False)
     
     args = parser.parse_args()
-    cmd, part, cpu, wall, nodes, depend, direct, jobid, odir = args.i, args.q, args.c, args.t, args.x, args.d, args.D, args.n, args.o
+    cmd, part, cpu, wall, mem, nodes, depend, direct, jobid, odir = args.i, args.q, args.c, args.t, args.r, args.x, args.d, args.D, args.n, args.o
     acc, mail, addr = args.A, args.m, args.M 
     arr, arrby = args.T, args.B
-    rc, conda_env, _help = args.rc, args.E, args.h
+    rc, conda_env, join, _help = args.rc, args.E, args.j, args.h
     if (_help==True or len(sys.argv)==1):
         print(__usage__)
         sys.exit(0)
@@ -113,6 +116,8 @@ def main():
     if arr!=None: sys.stdout.write('#PBS -t {}%{}\n'.format(arr,arrby))
     if acc!=None: sys.stdout.write('#PBS -A {}\n'.format(acc))
     if mail!=None: sys.stdout.write('#PBS -m {}\n#PBS -M {}\n'.format(mail,addr))
+    if mem!=None:  sys.stdout.write('#PBS -l mem={}\n'.format(mem))
+    if join==True: sys.stdout.write('#PBS -j oe\n')
     ############################################################################
     if rc != None: sys.stdout.write('source {}\n'.format(rc))
     if conda_env != None: sys.stdout.write('conda activate {}\n'.format(conda_env))
