@@ -4,7 +4,7 @@
 ### Install
 
 ```
-pip install https://github.com/dantaki/pbsmaker/releases/download/0.0.3/pbsmaker-0.0.3.tar.gz
+pip install https://github.com/dantaki/pbsmaker/releases/download/0.0.4/pbsmaker-0.0.4.tar.gz
 ```
 
 -------------------------------------
@@ -38,6 +38,7 @@ Options:
   -n        STR         job name                           [default: foo]
   -o        PATH        stdout and stderr log directory    [default: cwd]
   -x        INT         nodes                              [default: 1]
+  -r        STR         requested memory in bytes
   -A        STR         account
   -m        STR         email options
   -M        STR         email address
@@ -47,7 +48,7 @@ Options:
   -B        INT         parallel jobs
   -rc       FILE        bashrc file to source
   -E        STR         conda environment to load
-
+  -j                    join output and error log files
   -h        show this message and exit
 	 
 ```
